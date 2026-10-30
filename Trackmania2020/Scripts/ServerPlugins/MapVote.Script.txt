@@ -1,7 +1,7 @@
 #RequireContext CServerPlugin
 
 #Const ScriptName "ServerPlugins/MapVote.Script.txt"
-#Const Version "1.0.3+2026-06-19"
+#Const Version "1.0.4+2026-10-29"
 
 #Include "TextLib" as TL
 #Include "MathLib" as ML
@@ -199,6 +199,7 @@ if (PrevPageIsVisible != PageIsVisible) {
             Persistent_MapVote_RecentlyPlayedMaps[CurrentServerLogin].removekey(0);
         }
     }
+    UserMgr.MainUser.PersistentSave();
     log("Your recently played maps:");
     log(Persistent_MapVote_RecentlyPlayedMaps[CurrentServerLogin]);
     Net_MapVote_RecentlyPlayedMaps = Persistent_MapVote_RecentlyPlayedMaps[CurrentServerLogin];
@@ -352,7 +353,7 @@ main() {
 
     declare netwrite Text Net_MapVote_MyVote for UI;
 
-    declare persistent Text[][Text] Persistent_MapVote_RecentlyPlayedMaps for LocalUser;
+    declare persistent Text[][Text] Persistent_MapVote_RecentlyPlayedMaps for UserMgr.MainUser;
     declare netwrite Text[] Net_MapVote_RecentlyPlayedMaps for UI;
 
     Net_MapVote_MyVote = "";
@@ -634,6 +635,7 @@ main() {
         Net_MapVote_PlayersVotes = G_MapVote_PlayersVotes;
         foreach(Event in PendingEvents) {
             if (Event == Null) continue;
+            
             if (Event.Type == CServerPluginEvent::EType::MapUnloadRequested) {
                 StartVote();
             } else if (Event.Type == CServerPluginEvent::EType::ModeCallback) {
